@@ -1,0 +1,6 @@
+echo -e "\n\n"; \
+for i in `df -Ph  | awk '{print $(NF-1),$(NF-0)}' | egrep -vi "dev|mount" | awk  -F "%" '{if($1 > 80) print $0}' |awk '{print $2}' `; \
+  do for j in {1..60}; do echo -n "="; done; echo ""; 
+df -Ph $i| grep -vi file;echo ""; reserve=$(dumpe2fs -h `df -Ph $i | egrep -vi 'mount'| awk '{print $1}'` | grep "lock count" | tr "\n" " " | awk '{print 100*$7/$3}'); echo $reserve; r=`echo $reserve | tail -1`; \
+if [ "$r" -gt 1 ]; then echo -e "\nCommand to run to reduce reserve space to **1%** \n(change \X value below as needed in \"-mX\"): \ntune2fs -m1 `df -Ph $i | egrep -vi 'mount'| awk '{print $1}'`"; for j in {1..60}; do echo -n "=";done; else echo -e "\nReserve space is already on minumum possible value"; for j in {1..60}; do echo -n "=";done; fi; \
+echo -e "\n"; done;
